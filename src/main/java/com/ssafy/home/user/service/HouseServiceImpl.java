@@ -1,10 +1,10 @@
 package com.ssafy.home.user.service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
 
-import com.ssafy.home.common.page.PageRequestDto;
 import com.ssafy.home.user.dao.HouseDao;
 import com.ssafy.home.user.dto.in.HouseRequest;
 import com.ssafy.home.user.dto.out.HouseDetailResponse;
@@ -17,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 public class HouseServiceImpl implements HouseService{
 	
 	private final HouseDao dao;
+	private final SearchKeywordService keywordService;
 	
 	/**
 	 * 키워드 검색
@@ -25,7 +26,13 @@ public class HouseServiceImpl implements HouseService{
 	 */
 	@Override
 	public List<HouseResponse> searchByKeyword(HouseRequest house) {
-		return dao.searchByKeyword(house);
+		
+		// Redis에 검색 키워드 저장
+        if (house.getKeyword() != null && !house.getKeyword().isBlank()) {
+            keywordService.saveKeyword(house.getKeyword());
+        }
+        return new ArrayList<>();
+//		return dao.searchByKeyword(house);
 	}
 	
 	/**

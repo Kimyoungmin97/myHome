@@ -3,6 +3,7 @@ package com.ssafy.home.user.controller;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -17,6 +18,7 @@ import com.ssafy.home.user.dto.in.HouseRequest;
 import com.ssafy.home.user.dto.out.HouseDetailResponse;
 import com.ssafy.home.user.dto.out.HouseResponse;
 import com.ssafy.home.user.service.HouseServiceImpl;
+import com.ssafy.home.user.service.SearchKeywordService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -26,6 +28,7 @@ import lombok.RequiredArgsConstructor;
 public class HouseController {
 	
 	private final HouseServiceImpl service;
+	private final SearchKeywordService keywordService;
 
 	/**
 	 * 집 검색
@@ -38,10 +41,10 @@ public class HouseController {
 		List<HouseResponse> lsit = new ArrayList<>();
 		try {
 			lsit = service.searchByKeyword(house);
+			return ResponseEntity.ok(ApiResponse.success(lsit));
 		} catch (Exception e) {
 			throw new CustomException(ErrorCode.INTERNAL_SERVER_ERROR);
 		}
-		return ResponseEntity.ok(ApiResponse.success(lsit));
 	}
 	
 	@GetMapping("/search/{aptSeq}/deals")
@@ -49,9 +52,19 @@ public class HouseController {
 		List<HouseDetailResponse> lsit = new ArrayList<>();
 		try {
 			lsit = service.selectDealsByAptSeq(aptSeq);
+			return ResponseEntity.ok(ApiResponse.success(lsit));
 		} catch (Exception e) {
 			throw new CustomException(ErrorCode.INTERNAL_SERVER_ERROR);
 		}
-		return ResponseEntity.ok(ApiResponse.success(lsit));
 	}
+	
+	@GetMapping("/search/popular")
+    public ResponseEntity<ApiResponse<List<String>>> popularKeywords() {
+        var redisResults = keywordService.getTopKeywords(10);
+        List<String> keywords = redisResults.stream()
+                .map(ZSetOperations.TypedTuple::getValue)
+                .toList();
+        return ResponseEntity.ok(ApiResponse.success(keywords));
+    }
+
 }
