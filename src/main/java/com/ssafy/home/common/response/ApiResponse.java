@@ -28,4 +28,9 @@ public class ApiResponse<T> {
     public static ApiResponse<Void> fail(int code, String message) {
         return new ApiResponse<>(false, code, message, null);
     }
+    
+    // 실패 응답 (추가 데이터 포함)
+    public static <T> ApiResponse<T> fail(int code, String message, T data) {
+        return new ApiResponse<>(false, code, message, data);
+    }
 }

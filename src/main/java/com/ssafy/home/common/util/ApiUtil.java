@@ -11,20 +11,13 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
-import com.ssafy.home.user.service.HouseRedisService;
-
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-@Component
-@RequiredArgsConstructor
 @Slf4j
 public class ApiUtil {
 	
-	private final HouseRedisService houseRedisService;
 	
 	@Value("${api.key_data}")
     private String serviceKey;
