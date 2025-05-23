@@ -18,7 +18,7 @@ public enum ErrorCode {
     FORBIDDEN(HttpStatus.FORBIDDEN, "접근이 거부되었습니다."),
 
     // 사용자 정의
-    USER_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 사용자입니다."),
+    USER_NOT_FOUND(HttpStatus.NOT_FOUND, "id/pass 확인"),
     DUPLICATE_USER(HttpStatus.CONFLICT, "이미 존재하는 사용자입니다.");
 
     private final HttpStatus status;

@@ -11,16 +11,16 @@
 		<result column="price" property="price"/>
 		<result column="latitude" property="latitude"/>
 		<result column="longitude" property="longitude"/>
-		<result column="avgPriceAll" property="avg_price_all"/>
-		<result column="avgPriceNearPeak" property="avg_price_near_peak"/>
+		<result column="avg_price_all" property="avgPriceAll"/>
+		<result column="avg_price_near_peak" property="avgPriceNearPeak"/>
 	</resultMap>
 	
 	<resultMap type="HouseDetailResponse" id="houseDetailResponseMap">
 		<id column="no" property="no"/>
 		<result column="date" property="date"/>
 		<result column="floor" property="floor"/>
-		<result column="excluUseAr" property="exclu_use_ar"/>
-		<result column="dealAmount" property="deal_amount"/>
+		<result column="exclu_use_ar" property="excluUseAr"/>
+		<result column="deal_amount" property="dealAmount"/>
 		<result column="price" property="price"/>
 	</resultMap>
 	

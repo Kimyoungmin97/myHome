@@ -18,7 +18,7 @@ public class LoggingAspect {
 	/**
 	 * model 패키지에 속한 클래스의 모든 메서드를 지정하는 pointcut 메서드를 만들자
 	 */
-	@Pointcut("execution(* com.ssafy..model..*(..))")
+	@Pointcut("execution( * com.ssafy..dao.*.*(..))")
 	void allModelMethod() {}
 	
 	/**

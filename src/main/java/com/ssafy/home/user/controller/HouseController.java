@@ -18,7 +18,7 @@ import com.ssafy.home.user.dto.in.HouseRequest;
 import com.ssafy.home.user.dto.out.HouseDetailResponse;
 import com.ssafy.home.user.dto.out.HouseResponse;
 import com.ssafy.home.user.service.HouseServiceImpl;
-import com.ssafy.home.user.service.SearchKeywordService;
+import com.ssafy.home.user.service.RedisService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -28,7 +28,7 @@ import lombok.RequiredArgsConstructor;
 public class HouseController {
 	
 	private final HouseServiceImpl service;
-	private final SearchKeywordService keywordService;
+	private final RedisService redisService;
 
 	/**
 	 * 집 검색
@@ -60,11 +60,18 @@ public class HouseController {
 	
 	@GetMapping("/search/popular")
     public ResponseEntity<ApiResponse<List<String>>> popularKeywords() {
-        var redisResults = keywordService.getTopKeywords(10);
+        var redisResults = redisService.getTopKeywords(10);
         List<String> keywords = redisResults.stream()
                 .map(ZSetOperations.TypedTuple::getValue)
                 .toList();
         return ResponseEntity.ok(ApiResponse.success(keywords));
     }
+	
+	@GetMapping("/search/recent")
+	public ResponseEntity<ApiResponse<List<String>>> recentKeywords() {
+	    String userId = "user123"; // 예시
+	    List<String> recents = redisService.getRecentKeywords(userId);
+	    return ResponseEntity.ok(ApiResponse.success(recents));
+	}
 
 }
