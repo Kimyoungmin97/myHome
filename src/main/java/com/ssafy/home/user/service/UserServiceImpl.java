@@ -3,6 +3,7 @@ import org.springframework.stereotype.Service;
 
 import com.ssafy.home.common.exception.CustomException;
 import com.ssafy.home.common.exception.ErrorCode;
+import com.ssafy.home.user.dao.HouseDao;
 import com.ssafy.home.user.dao.UserDao;
 import com.ssafy.home.user.dto.User;
 
@@ -13,9 +14,13 @@ import lombok.RequiredArgsConstructor;
 public class UserServiceImpl implements UserService{
 
 	private final UserDao userDao;
+	private final HouseDao houseDao;
 	
 	@Override
 	public int insert(User user) {
+		String[] residences = user.getResidence().split(" ");
+		String aptSeq = houseDao.selectAptSeq(residences);
+		user.setAptSeq(aptSeq);
 		return userDao.insert(user);
 	}
 

@@ -2,33 +2,173 @@
 <!DOCTYPE mapper
   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.ssafy.home.user.dao.HouseDao">
+<mapper namespace="com.ssafy.home.user.dao.BoardDao">
 
 	<resultMap type="BoardResponse" id="boardResponseMap">
 		<id column="post_id" property="postId"/>
 		<result column="apt_seq" property="aptSeq"/>
-		<result column="username" property="username"/>
+		<result column="name" property="name"/>
 		<result column="title" property="title"/>
 		<result column="content" property="content"/>
 		<result column="isSecret" property="isSecret"/>
+		<result column="time" property="time"/>
+		<result column="commentCnt" property="commentCnt"/>
+	</resultMap>
+	
+	<resultMap type="CommentResponse" id="commentResponseMap">
+		<id column="comment_id" property="commentId"/>
+		<result column="user_id" property="userId"/>
+		<result column="name" property="name"/>
+        <result column="parent_id" property="parentId"/>
+        <result column="commentContent" property="commentContent"/>
+        <result column="created_at" property="createdAt"/>
+        <result column="depth" property="depth"/>
+	</resultMap>
+	
+	<resultMap type="BoardResponse" id="boardCommentResponseMap" extends="boardResponseMap">
+		<collection property="comments" column="post_id" ofType="CommentResponse" resultMap="commentResponseMap"/>
 	</resultMap>
 	
 	<select id="getBoardList" parameterType="BoardRequest"  resultMap="boardResponseMap">
-		 SELECT p.post_id AS postId
-		 	  , p.apt_seq AS aptSeq
-		 	  , u.username AS username
+		 SELECT p.post_id
+		 	  , p.apt_seq
+		 	  , u.name
 		 	  , p.title
 		 	  , p.content
-		 	  , p.is_secret AS isSecret
+		 	  , p.is_secret
+		 	  , p.created_at AS time
+		 	  , (select count(*) from comments where post_id = p.post_id) AS commentCnt
 		   FROM posts p
 		   JOIN users u ON p.user_id = u.user_id
 		  WHERE p.apt_seq = #{aptSeq}
-		    AND p.is_secret = #{isSecret}
-	    <if test="lastPostId != null and lastPostId > 0">
-	      	AND p.post_id <![CDATA[ < ]]> #{lastPostId}
+	    <if test="lastPostId != null">
+	      	AND p.post_id <![CDATA[ > ]]> #{lastPostId}
 	    </if>
 		  ORDER BY p.post_id DESC
 		  LIMIT 10
 	</select>
 	
+	<select id="getBoardDetail" parameterType="int"  resultMap="boardCommentResponseMap">
+		WITH RECURSIVE comment_tree AS (
+			SELECT c.comment_id,
+				   c.post_id,
+				   u.name,
+				   c.user_id,
+				   c.parent_id,
+				   c.content,
+				   c.created_at,
+				   CAST(LPAD(c.comment_id, 10, '0') AS CHAR(1000)) AS sort_key,
+				   0 AS depth
+			  FROM comments c
+			  JOIN users u ON c.user_id = u.user_id
+			 WHERE c.post_id = #{postId} AND c.parent_id IS NULL
+			 UNION ALL
+			SELECT c.comment_id,
+				   c.post_id,
+				   u.name,
+				   c.user_id,
+				   c.parent_id,
+				   c.content,
+				   c.created_at,
+				   CONCAT(ct.sort_key, '-', LPAD(c.comment_id, 10, '0')) AS sort_key,
+				   ct.depth + 1
+			  FROM comments c
+			  JOIN users u ON c.user_id = u.user_id
+		INNER JOIN comment_tree ct ON c.parent_id = ct.comment_id
+		)
+		
+		SELECT p.post_id
+			 , p.apt_seq
+			 , u.username
+			 , p.title
+			 , p.content
+			 , p.is_secret
+	         , ct.comment_id
+	         , ct.name
+	         , ct.user_id
+	         , ct.parent_id
+	         , ct.content AS commentContent
+	         , ct.created_at
+	         , ct.depth
+		  FROM posts p
+		  JOIN users u ON p.user_id = u.user_id
+	      LEFT JOIN comment_tree ct ON p.post_id = ct.post_id
+		 WHERE p.post_id = #{postId}
+		 ORDER BY ct.sort_key, ct.created_at
+	</select>
+	
+	<insert id="insertBoard">
+		INSERT INTO posts( 
+						   apt_seq
+						 , user_id
+						 , title
+						 , content
+						 , is_secret
+						 , created_ad
+						 , updated_at
+						 )
+						 
+		 VALUE( 
+		 		#{aptSeq}
+		 	  , #{userId}
+		 	  , #{title}
+		 	  , #{content}
+		 	  , #{isSecret}
+		 	  , NOW()
+		 	  , NULL
+		 	   )
+	</insert>
+	
+	<update id="updateBoard">
+		UPDATE posts
+		   SET title = #{title}
+		   	 , content = #{content}
+	   		 , is_secret = #{isSecret}
+		     , updated_at = NOW()
+	     WHERE post_id = #{postId}
+	</update>
+	
+	<delete id="deleteBoard" parameterType="int">
+		DELETE FROM posts
+		 WHERE post_id = #{postId}
+	</delete>
+	
+	<delete id="deleteAllCommentsByPostId" parameterType="int">
+		DELETE FROM comments
+		WHERE post_id = #{postId}
+	</delete>
+	
+	<insert id="insertComment">
+		INSERT INTO comments(
+							  post_id
+							, user_id
+							, parent_id
+							, content
+							, created_at
+							, updated_at
+							)
+		 VALUE (
+		     	 #{postId}
+		       , #{userId}
+		       , #{comment.parentId}
+		       , #{comment.content}
+		       , NOW()
+		       , NULL
+		 	   )
+	</insert>	
+	
+	<update id="updateComment">
+		UPDATE comments
+		   SET content = #{content}
+		     , updated_at = NOW()
+	     WHERE post_id = #{postId}
+	       AND comment_id = #{commentId}
+	</update>
+	
+	<delete id="deleteComment">
+		DELETE FROM comments
+		 WHERE post_id = #{postId} 
+		   AND comment_id = #{commentId}
+	</delete>
+		
 </mapper>

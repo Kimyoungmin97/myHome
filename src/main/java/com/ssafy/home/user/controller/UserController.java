@@ -18,7 +18,7 @@ import com.ssafy.home.user.service.UserServiceImpl;
 import lombok.RequiredArgsConstructor;
 
 @Controller
-@RequestMapping("/user")
+@RequestMapping("/api/user")
 @RequiredArgsConstructor
 public class UserController {
 	

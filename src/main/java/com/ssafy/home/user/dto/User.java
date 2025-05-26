@@ -21,6 +21,7 @@ public class User {
     private String name;
     private @NonNull String email;
     private String aptSeq;
+    private String residence;
     private String role;
     private byte[] profileImage;
     private String refreshToken;

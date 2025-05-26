@@ -74,21 +74,8 @@ public class APISecurityConfig {
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/api/**", configuration);
-        source.registerCorsConfiguration("/member/checkEmail", configuration);
+        source.registerCorsConfiguration("/user", configuration);
 
         return source;
-    }
-    
-    @Bean
-    RoleHierarchy roleHierachy() {
-        return RoleHierarchyImpl.withDefaultRolePrefix() // role의 기본 prefix 설정: ROLE_
-                .role("ADMIN").implies("USER").role("USER").implies("GUEST").build();
-    }
-
-    @Bean
-    PasswordEncoder passEncoder() {
-        // 내부적으로 BCryptPasswordEncoder를 사용한다.
-        // return new BCryptPasswordEncoder();
-        return PasswordEncoderFactories.createDelegatingPasswordEncoder();
     }
 }

@@ -6,9 +6,12 @@ import lombok.NoArgsConstructor;
 
 @Data
 @AllArgsConstructor
-@NoArgsConstructor 
-public class CommentRequset {
+@NoArgsConstructor
+public class InsertBoardRequset {
 	
-	private int parentId;
+	private String aptSeq;
+	private String userId;
+	private String title;
 	private String content;
+	private int isSecret;//(0: 공개글, 1: 비밀글)
 }

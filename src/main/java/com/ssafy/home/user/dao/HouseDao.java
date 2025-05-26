@@ -25,4 +25,6 @@ public interface HouseDao {
 	 * @return List
 	 */
 	public List<HouseDetailResponse> selectDealsByAptSeq(String aptSeq);
+	
+	public String selectAptSeq(String[] residences);
 }

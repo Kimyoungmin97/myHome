@@ -38,11 +38,11 @@ public class JWTUtil {
 			user.setRole("USER");
 		}
 		return create("accessToken", accessExpMin,
-				Map.of("username", user.getUsername(), "name", user.getName(), "role", user.getRole()));
+				Map.of("username", user.getUsername(), "name", user.getName(), "role", user.getRole(), "aptSeq", user.getAptSeq(), "residence", user.getResidence()));
 	}
 
-	public String createRefreshToken(User member) {
-		return create("refreshToken", refreshExpMin, Map.of("email", member.getEmail()));
+	public String createRefreshToken(User user) {
+		return create("refreshToken", refreshExpMin, Map.of("username", user.getUsername(), "name", user.getName(), "role", user.getRole(), "aptSeq", user.getAptSeq(), "residence", user.getResidence()));
 	}
 
 	/**

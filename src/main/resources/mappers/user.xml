@@ -14,6 +14,7 @@
 		<result column="role" property="role"/>
 		<result column="profile_image" property="profileImage"/>
 		<result column="refresh_token" property="refreshToken"/>
+		<result column="residence" property="residence"/>
 	</resultMap>
 	
 	<insert id="insert" useGeneratedKeys="true" keyProperty="userId">
@@ -31,7 +32,7 @@
 			  , #{password}
 			  , #{name}
 			  , #{email}
-			  , #{apt_seq}
+			  , #{aptSeq}
 			  , NOW()
 			  , 'USER'
        		  )
@@ -61,8 +62,19 @@
     </update>
     
     <select id="select" resultType="User">
-        select * 
-          from users 
+        select u.user_id
+             , u.username
+             , u.password
+             , u.name
+             , u.email
+             , u.apt_seq
+             , u.role
+             , u.profile_image
+             , u.refresh_token
+             , CONCAT(dc.sido_name, ' ', dc.gugun_name, ' ', dc.dong_name, ' ', hi.jibun) AS residence
+          from users u
+          JOIN houseinfos hi ON u.apt_seq = hi.apt_seq
+          JOIN dongcodes dc ON CONCAT(hi.sgg_cd, hi.umd_cd) = dc.dong_code
          where username = #{username}
     </select>
 	

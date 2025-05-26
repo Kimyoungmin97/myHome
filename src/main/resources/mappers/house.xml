@@ -79,6 +79,13 @@
 		 WHERE hi.apt_seq = #{aptSeq};
 	</select>
 	
-	
+	<select id="selectAptSeq" resultType="String">
+		SELECT hi.apt_seq
+		  FROM houseinfos hi
+		  JOIN dongcodes dc ON CONCAT(hi.sgg_cd, hi.umd_cd) = dc.dong_code
+	   	 WHERE hi.apt_nm    LIKE CONCAT('%', #{array[2]}, '%')
+    	   AND dc.sido_name LIKE CONCAT('%', #{array[0]}, '%')
+       	   AND dc.gugun_name LIKE CONCAT('%', #{array[1]}, '%')
+	</select>
 	
 </mapper>

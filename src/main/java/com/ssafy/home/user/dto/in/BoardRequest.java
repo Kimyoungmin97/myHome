@@ -10,7 +10,6 @@ import lombok.NoArgsConstructor;
 public class BoardRequest {
 
 	private String aptSeq;
-	private boolean isSecret;
 	private int lastPostId;
 	
 }
