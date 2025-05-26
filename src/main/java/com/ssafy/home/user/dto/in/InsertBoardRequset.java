@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 public class InsertBoardRequset {
 	
 	private String aptSeq;
-	private String userId;
+	private int userId;
 	private String title;
 	private String content;
 	private int isSecret;//(0: 공개글, 1: 비밀글)

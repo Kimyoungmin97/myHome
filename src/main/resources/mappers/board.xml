@@ -7,6 +7,8 @@
 	<resultMap type="BoardResponse" id="boardResponseMap">
 		<id column="post_id" property="postId"/>
 		<result column="apt_seq" property="aptSeq"/>
+		<result column="apt_nm" property="aptNm"/>
+		<result column="username" property="username"/>
 		<result column="name" property="name"/>
 		<result column="title" property="title"/>
 		<result column="content" property="content"/>
@@ -41,8 +43,8 @@
 		   FROM posts p
 		   JOIN users u ON p.user_id = u.user_id
 		  WHERE p.apt_seq = #{aptSeq}
-	    <if test="lastPostId != null">
-	      	AND p.post_id <![CDATA[ > ]]> #{lastPostId}
+	    <if test="lastPostId != 0">
+	      	AND p.post_id <![CDATA[ < ]]> #{lastPostId}
 	    </if>
 		  ORDER BY p.post_id DESC
 		  LIMIT 10
@@ -79,7 +81,9 @@
 		
 		SELECT p.post_id
 			 , p.apt_seq
+			 , hi.apt_nm
 			 , u.username
+			 , u.name
 			 , p.title
 			 , p.content
 			 , p.is_secret
@@ -93,6 +97,7 @@
 		  FROM posts p
 		  JOIN users u ON p.user_id = u.user_id
 	      LEFT JOIN comment_tree ct ON p.post_id = ct.post_id
+	      JOIN houseinfos hi ON p.apt_seq = hi.apt_seq
 		 WHERE p.post_id = #{postId}
 		 ORDER BY ct.sort_key, ct.created_at
 	</select>
@@ -104,7 +109,7 @@
 						 , title
 						 , content
 						 , is_secret
-						 , created_ad
+						 , created_at
 						 , updated_at
 						 )
 						 
@@ -121,9 +126,9 @@
 	
 	<update id="updateBoard">
 		UPDATE posts
-		   SET title = #{title}
-		   	 , content = #{content}
-	   		 , is_secret = #{isSecret}
+		   SET title = #{board.title}
+		   	 , content = #{board.content}
+	   		 , is_secret = #{board.isSecret}
 		     , updated_at = NOW()
 	     WHERE post_id = #{postId}
 	</update>
@@ -150,7 +155,14 @@
 		 VALUE (
 		     	 #{postId}
 		       , #{userId}
-		       , #{comment.parentId}
+		       <choose>
+			      <when test="comment.parentId == 0">
+			        , NULL
+			      </when>
+			      <otherwise>
+			        , #{comment.parentId}
+			      </otherwise>
+			    </choose>
 		       , #{comment.content}
 		       , NOW()
 		       , NULL

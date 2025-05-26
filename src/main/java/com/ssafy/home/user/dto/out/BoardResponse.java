@@ -16,6 +16,8 @@ public class BoardResponse {
 
 	private int postId;
 	private String aptSeq;
+	private String aptNm;
+	private String username;
 	private String name;
 	private String title;
 	private String content;

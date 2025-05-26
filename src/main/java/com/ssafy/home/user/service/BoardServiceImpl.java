@@ -32,17 +32,22 @@ public class BoardServiceImpl implements BoardService{
 	}
 
 	@Override
-	public void insertBoard(InsertBoardRequset board) {
+	public void insertBoard(InsertBoardRequset board,String userId) {
+		User user = userDao.select(userId);
+		board.setUserId(user.getUserId());
 		dao.insertBoard(board);
 	}
 
 	@Override
-	public void updateBoard(InsertBoardRequset board, int postId) {
+	public void updateBoard(InsertBoardRequset board, int postId, String userId) {
+		User user = userDao.select(userId);
+		board.setUserId(user.getUserId());
 		dao.updateBoard(board, postId);
 	}
 
 	@Override
 	public void deleteBoard(int postId) {
+		dao.deleteAllCommentsByPostId(postId);
 		dao.deleteBoard(postId);
 	}
 

@@ -73,8 +73,8 @@
              , u.refresh_token
              , CONCAT(dc.sido_name, ' ', dc.gugun_name, ' ', dc.dong_name, ' ', hi.jibun) AS residence
           from users u
-          JOIN houseinfos hi ON u.apt_seq = hi.apt_seq
-          JOIN dongcodes dc ON CONCAT(hi.sgg_cd, hi.umd_cd) = dc.dong_code
+          LEFT JOIN houseinfos hi ON u.apt_seq = hi.apt_seq
+          LEFT JOIN dongcodes dc ON CONCAT(hi.sgg_cd, hi.umd_cd) = dc.dong_code
          where username = #{username}
     </select>
 	

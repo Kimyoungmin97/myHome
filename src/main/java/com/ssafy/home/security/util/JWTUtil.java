@@ -37,12 +37,23 @@ public class JWTUtil {
 		if (user.getRole() == null) {
 			user.setRole("USER");
 		}
-		return create("accessToken", accessExpMin,
-				Map.of("username", user.getUsername(), "name", user.getName(), "role", user.getRole(), "aptSeq", user.getAptSeq(), "residence", user.getResidence()));
+		if(user.getAptSeq() != null) {
+			return create("accessToken", accessExpMin,
+					Map.of("username", user.getUsername(), "name", user.getName(), "role", user.getRole(), "aptSeq", user.getAptSeq(), "residence", user.getResidence()));
+		}else {
+			return create("accessToken", accessExpMin,
+					Map.of("username", user.getUsername(), "name", user.getName(), "role", user.getRole()));
+		}
+		
 	}
 
 	public String createRefreshToken(User user) {
-		return create("refreshToken", refreshExpMin, Map.of("username", user.getUsername(), "name", user.getName(), "role", user.getRole(), "aptSeq", user.getAptSeq(), "residence", user.getResidence()));
+		if(user.getAptSeq() != null) {
+			return create("refreshToken", refreshExpMin, Map.of("username", user.getUsername(), "name", user.getName(), "role", user.getRole(), "aptSeq", user.getAptSeq(), "residence", user.getResidence()));	
+		}else {
+			return create("refreshToken", refreshExpMin, Map.of("username", user.getUsername(), "name", user.getName(), "role", user.getRole()));
+		}
+		
 	}
 
 	/**

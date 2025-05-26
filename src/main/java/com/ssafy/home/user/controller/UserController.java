@@ -30,6 +30,7 @@ public class UserController {
         	userService.insert(user);
             return ResponseEntity.ok(ApiResponse.success(Map.of("user", user)));
         } catch (DataAccessException e) {
+        	e.printStackTrace();
             throw new CustomException(ErrorCode.INTERNAL_SERVER_ERROR);
         }
     }

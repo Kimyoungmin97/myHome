@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -21,6 +22,7 @@ import com.ssafy.home.common.response.ApiResponse;
 import com.ssafy.home.security.dto.CustomUserDetails;
 import com.ssafy.home.user.dto.in.BoardRequest;
 import com.ssafy.home.user.dto.in.CommentRequset;
+import com.ssafy.home.user.dto.in.InsertBoardRequset;
 import com.ssafy.home.user.dto.out.BoardResponse;
 import com.ssafy.home.user.service.BoardServiceImpl;
 
@@ -55,6 +57,48 @@ public class BoardController {
 			result = service.getBoardDetail(postId);
 			return ResponseEntity.ok(ApiResponse.success(result));
 		} catch (Exception e) {
+			e.printStackTrace();
+			throw new CustomException(ErrorCode.INTERNAL_SERVER_ERROR);
+		}
+	}
+	
+	@PostMapping
+	public ResponseEntity<ApiResponse<Void>> insertBoard(
+			@RequestBody InsertBoardRequset board,
+			@AuthenticationPrincipal CustomUserDetails details
+			){
+		try {
+			service.insertBoard(board, details.getUsername());
+			return ResponseEntity.ok(ApiResponse.success());
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new CustomException(ErrorCode.INTERNAL_SERVER_ERROR);
+		}
+	}
+	
+	@DeleteMapping("/{postId}")
+	public ResponseEntity<ApiResponse<Void>> deleteBoard(
+				@PathVariable int postId
+			){
+		try {
+			service.deleteBoard(postId);
+			return ResponseEntity.ok(ApiResponse.success());
+		} catch (Exception e) {
+			throw new CustomException(ErrorCode.INTERNAL_SERVER_ERROR);
+		}
+	}
+	
+	@PutMapping("/{postId}")
+	public ResponseEntity<ApiResponse<Void>> updateBoard(
+			@PathVariable int postId,
+			@RequestBody InsertBoardRequset board,
+			@AuthenticationPrincipal CustomUserDetails details
+		){
+		try {
+			service.updateBoard(board, postId, details.getUsername());
+			return ResponseEntity.ok(ApiResponse.success());
+		} catch (Exception e) {
+			e.printStackTrace();
 			throw new CustomException(ErrorCode.INTERNAL_SERVER_ERROR);
 		}
 	}
@@ -79,13 +123,14 @@ public class BoardController {
 			@PathVariable int commentId,
 			@RequestParam String connent
 		){
-	try {
-		service.updateComment(postId, connent, commentId);
-		return ResponseEntity.ok(ApiResponse.success());
-	} catch (Exception e) {
-		throw new CustomException(ErrorCode.INTERNAL_SERVER_ERROR);
-	}
-}
+		try {
+			service.updateComment(postId, connent, commentId);
+			return ResponseEntity.ok(ApiResponse.success());
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new CustomException(ErrorCode.INTERNAL_SERVER_ERROR);
+		}
+	}	
 	
 	@DeleteMapping("/{postId}/{commentId}")
 	public ResponseEntity<ApiResponse<Void>> deleteComment(

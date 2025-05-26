@@ -13,9 +13,9 @@ public interface BoardService {
 	
 	public BoardResponse getBoardDetail(int postId); 
 	
-	public void insertBoard(InsertBoardRequset board);
+	public void insertBoard(InsertBoardRequset board, String userId);
 	
-	public void updateBoard(InsertBoardRequset board, int postId);
+	public void updateBoard(InsertBoardRequset board, int postId, String userId);
 	
 	public void deleteBoard(int postId);
 	
